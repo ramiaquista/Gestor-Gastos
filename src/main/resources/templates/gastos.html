@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+      <!-- ===== BOX ICONS ===== -->
+      <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet' />
+
+      <!-- ===== CSS ===== -->
+       <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />  -->
+      <link rel="stylesheet" href="../static/lib/bootstrap.min.css" th:href="@{/lib/bootstrap.min.css}" />
+      <link rel="stylesheet" th:href="@{/css/styles.css}" />
+      <link rel="stylesheet" th:href="@{/css/calculator.css}" />
+
+      <!-- ===== SELECT2 ===== -->
+      <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
+
+      <title>Gestor Gastos | Gastos</title>
+  </head>
+
+  <body id="body">
+  <!---------------- SVG ICONS -------------------> 
+    <svg style="display: none;">
+      <defs>
+      <!-- TopArrow -->
+      <symbol id="topArrow-icon" viewBox="0 0 15 15">
+        <path d="M8.2 15V3.2C9 4.4 10.8 6 12.2 7c.4 0 .9-.5.9-1a33.1 33.1 0 01-5.6-6C6.1 2 3.7 4.4 1.9 6c0 .5.3 1 .9 1C4 6 6 4.5 6.8 3.3V15z"/>
+      </symbol>
+      <!-- delete icon -->
+      <symbol id="delete-icon" viewBox="0 0 24.5 24">
+        <path d="M7.84 2.955C6.76 3.818.248 11.342.248 11.342a1 1 0 000 1.316l7 8A1 1 0 008 21h13c1.645 0 3-1.355 3-3V6c0-1.645-1.355-2.994-3-3 0 0-13.048-.135-13.16-.045zM8.453 5H21c.564 0 1 .436 1 1v12c0 .564-.436 1-1 1H8.453l-6.125-7zm9.537 2.986a1 1 0 00-.697.307L15 10.586l-2.293-2.293a1 1 0 00-.717-.303c-.897 0-1.34 1.091-.697 1.717L13.586 12l-2.293 2.293c-.982.942.472 2.396 1.414 1.414L15 13.414l2.293 2.293c.942.982 2.396-.472 1.414-1.414L16.414 12l2.293-2.293c.657-.632.195-1.742-.717-1.72z"/>
+      </symbol> 
+      <!-- edit icon -->
+      <symbol id="edit-icon" viewBox="0 0 24 24">
+        <path d="M12 19a1 1 0 100 2h9a1 1 0 100-2zM18.15 1.85a3.1 3.1 0 00-2.36.94L3.16 15.53c-.13.12-1.13 4.23-1.13 4.23a1 1 0 001.21 1.21l4.23-1.13C7.65 19.79 20.21 7.2 20.21 7.2c.67-.68 1-1.56.94-2.36a3.18 3.18 0 00-.94-2.06 3.18 3.18 0 00-2.06-.94zm-.11 2c.25 0 1.1.86 1.12 1.11.01.26-.04.51-.37.83L6.5 18.1l-2.12.54.53-2.12 12.3-12.3c.33-.33.58-.38.84-.37z"/>
+      </symbol> 
+      <!-- plus icon -->
+      <symbol id="plus-icon" viewBox="0 0 24 24">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
+      </symbol> 
+      <!-- plus circle icon -->
+      <symbol id="plus-circle-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="12"></circle><line stroke="#fff" x1="12" y1="8" x2="12" y2="16"></line><line stroke="#fff" x1="8" y1="12" x2="16" y2="12"></line> 
+      </symbol> 
+      <!-- plus circle fill icon -->
+      <symbol id="plus-circle-fill-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="12"/><path stroke="#fff" d="M12 8v8"/><path stroke="#fff" d="M8 12h8"/>
+      </symbol> 
+      <!-- backspace icon -->
+      <symbol id="backspace-icon"  viewBox="0 0 18.056 13.593">
+        <path d="M7.83 3.946a.5.5 0 000 .708L9.975 6.8 7.828 8.946a.5.5 0 00.707.708l2.147-2.147 2.146 2.147a.5.5 0 00.707-.708L11.39 6.8l2.146-2.146a.5.5 0 00-.707-.708l-2.146 2.147-2.147-2.147a.5.5 0 00-.707 0z"/><path d="M15.753 0a2.303 1.942 0 012.303 1.942v9.71a2.303 1.942 0 01-2.303 1.941H7.602a2.303 1.942 0 01-1.749-.677L.277 7.428a1.151.97 0 010-1.264L5.853.68A2.303 1.942 0 017.602 0zM7.602.97a1.151.97 0 00-.875.34L1.151 6.798l5.577 5.485a1.151.97 0 00.874.34h8.151a1.151.97 0 001.151-.97v-9.71a1.151.97 0 00-1.15-.971z"/>
+      </symbol>
+      <!-- error icon -->
+      <symbol id="error-icon" viewBox="0 0 24 24" fill="red">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
+      </symbol>
+      </defs>
+    </svg>
+    
+    <!-- backTo Top btn -->
+    <a href="#body" id="toTopBtn" title="hacia arriba" class="hvr-float" data-abc="true" aria-label="toTop" role="button">
+      <svg class="svg-icon hvr-icon" fill="#5f2029"><use xlink:href="#topArrow-icon"></use></svg>
+    </a>
+
+    <!-- horizontal navbar (contains menu toggle icon, searchbox and profile account) -->
+    <header class="header" id="header">
+        <div class="header__toggle me-1">
+          <i class='bx bx-menu' id="header-toggle"></i>
+        </div>
+        <div class="input-group input-group-sm">
+          <span id="searchIcon" type="button" class="input-group-text">
+            <i id="searchSVG" class='bx bx-search nav__icon currentColor'></i>
+          </span>
+          <input
+            id="searchBox"
+            type="search"
+            class="form-control"
+            placeholder="Filtrar gastos..."
+            aria-label="Buscar Gastos"
+            onfocusout="hideSearchBox()"
+          >
+        </div>
+
+      <div class="dropdown ms-4">
+        <a class="" id="dropdownUserButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <div class="header__img">
+            <img th:if="${usuarioFoto != null}" class="fotoPerfil" th:src="${'/foto/usuario/' + __${usuarioId}__}" alt="foto-perfil">
+            <img th:if="${usuarioFoto == null}" th:src="@{/img/user.svg}" alt="foto-perfil">
+          </div>
+        </a>
+
+          <div class="dropdown-menu" aria-labelledby="dropdownUserButton">
+            <p class="dropdown-item dropdown-title fw-bold" style="color: var(--green-color)">¡Bienvenido,&nbsp;
+              <span class="d-block fw-normal" th:text="|${usuarioNombre}!|"></span>
+              <!-- <span class="d-block fw-normal" th:text="|${#authentication.principal.username}!|"></span> -->
+            </p>
+            <a class="dropdown-item" style="color: #6c757d" th:href="@{cuentaUsuario}">
+              <i class='bx bxs-user-circle'></i>
+              <span>Mi cuenta</span>
+            </a>
+            <!-- <a class="dropdown-item" href="#" style="color: #6c757d"> -->
+              <form th:action="@{/logout}" method="POST" class="dropdown-item d-flex align-items-center">
+                <i class='bx bx-log-out' style="color: #6c757d"></i>
+                <button class="dropdown-item" type="submit" id="logout">Cerrar Sesión</button>
+              </form>
+              <!-- <span>Cerrar Sesión</span> -->
+            <!-- </a> -->
+          </div>
+      </div>
+    </header>
+          
+    <div id="backdropId" class="backdrop"></div>
+        
+    <!-- sidebar menu -->
+    <div class="sidebar overflow-y-auto" id="sidebar">
+      <nav id="nav-tag" class="nav">
+        <div> 
+          <!--  app name + logo-->
+          <a id="brand" th:href="@{/}" class="nav__logo">
+            <img th:src="@{/img/logo_gastegg_blanco_sidebar.svg}" height="30" alt="App LOGO" class="logo">
+            <!-- <i class='bx bx-layer nav__logo-icon'></i> -->
+            <span id="app__name" class="ms-2 nav__logo-name">
+              <img th:src="@{/img/gastegg_nombre_blanco.svg}" width="60" alt="App name" class="logo">
+            </span>
+          </a>
+         
+          <!-- nav list container-->
+          <div class="nav__list">
+            
+            <a href="#" class="nav__link">
+              <i class='ocre-text bx bx-crown nav__icon'></i>
+              <span class="link__name">Versión Premium</span>
+            </a>
+
+            <a href="#" class="nav__link active">
+              <i class='bx bx-dollar-circle nav__icon'></i>
+              <span class="link__name">Gastos</span>
+            </a>
+            
+            <a href="#" th:href="@{/categorias}" class="nav__link">
+              <i class='bx bx-folder nav__icon'></i>
+              <span class="link__name">Categorías</span>
+            </a>
+            
+            <a href="#" th:href="@{/estadisticas}" class="nav__link">
+              <i class='bx bx-bar-chart-alt-2 nav__icon'></i>
+              <span class="link__name">Estadísticas</span>
+            </a>
+            
+            <a href="#" class="nav__link">
+              <i class='bx bx-message-square-detail nav__icon'></i>
+              <span class="link__name">Recordatorios</span>
+            </a>
+            
+            <a id="newEntity" type="button"
+            class=" mt-2 nav__link new-entity d-table" 
+            data-bs-toggle="modal"
+            data-bs-target="#modal-añadir-gasto"
+            >
+              <!-- <i id="newEntity__icon" class='bx bx-plus-circle nav__icon d-none' ></i> -->
+              <span class="link__name" style="background-color: transparent;">Añadir Gasto</span>
+            </a>
+            
+            <a id="newEntity-condensed" type="button"
+            class="d-none mt-2 nav__link new-entity-condensed" 
+            data-bs-toggle="modal"
+            data-bs-target="#modal-añadir-gasto"
+            >
+              <i class='bx bx-plus-circle nav__icon' ></i>
+              <span class="link__name" style="background-color: transparent;">Añadir Gasto</span>
+            </a>
+          
+            <!-- #logout? -->  
+            <a id="logout-sidebar" href="#" class="nav__link mt-2">
+              <i class='bx bx-log-out nav__icon'></i>
+              <span class="link__name">Log Out</span>
+            </a>
+
+          </div> <!-- end of nav__list container--> 
+        </div> 
+      </nav>
+    </div> <!-- sidebar end-->
+    
+    <!-- content -->
+    <main>
+      <div class="container-fluid">
+        <br>
+        <!-- <div id="time-period-selector" class="d-flex align-content-center mb-3 mx-auto"> -->
+        <!-- <div id="time-period-selector" class="card entidad__container mb-3 py-4">
+          <div class="align-items-center m-auto d-flex justify-content-between">
+              <div class="year-month-selector">
+                <button type="button" class="number-decrement me-md-5 me-sm-1" data-prev-date>
+                  <i class='bx bxs-chevron-left'></i>
+                </button>
+                <a id="date-selector-btn" href="" class="d-inline" data-bs-toggle="modal" data-bs-target="#year-month-modal">
+                  <div th:if="${seSeleccionoFecha == true}" class="d-inline-block">
+                    <span th:text=${mesSeleccionado} id="month-name" style="font-weight: bold"></span>
+                    <span th:text=${anioSeleccionado} id="year-number"></span>
+                  </div>
+                  <div th:if="${seSeleccionoFecha != true}" class="d-inline-block">
+                    <span th:text=${mesActual} id="month-name" style="font-weight: bold"></span>
+                    <span th:text=${anioActual} id="year-number"></span>
+                  </div>
+                </a>
+                <button type="button" class="number-increment ms-md-5 ms-sm-1" data-next-date>
+                  <i class='bx bxs-chevron-right'></i>
+                </button>
+              </div>
+          </div>
+        </div>  -->
+
+        <!-- contenedor entidad -->
+        <div class="card entidad__container">
+          <!-- Selector año-mes compacto -> ( botón estilo: < Jul 2021 > ) -->
+          <div class="card-header mx-auto mb-3" style="background-color: transparent; border: none; margin-top: -.5rem">
+            <div class="year-month-selector">
+              <button type="button" class="number-decrement me-md-5 me-sm-1" data-prev-date>
+                <i class='bx bxs-chevron-left'></i>
+              </button>
+              <a id="date-selector-btn" href="" class="d-inline" data-bs-toggle="modal" data-bs-target="#year-month-modal">
+                  <span class="tooltiptext">Abrir calendario</span>
+                <div th:if="${seSeleccionoFecha == true}" class="d-inline-block">
+                  <span th:text=${mesSeleccionado} id="month-name" style="font-weight: bold"></span>
+                  <span th:text=${anioSeleccionado} id="year-number"></span>
+                </div>
+                <div th:if="${seSeleccionoFecha != true}" class="d-inline-block">
+                  <span th:text=${mesActual} id="month-name" style="font-weight: bold"></span>
+                  <span th:text=${anioActual} id="year-number"></span>
+                </div>
+              </a>
+              <button type="button" class="number-increment ms-md-5 ms-sm-1" data-next-date>
+                <i class='bx bxs-chevron-right'></i>
+              </button>
+            </div>
+          </div>
+          <!-- total de gastos del mes -->
+          <div class="card-header mx-auto mb-3" style="background-color: transparent; border: none; margin-top: -.5rem">
+            <div class="gastoTotalMes">
+                <div th:if="${seSeleccionoFecha == true and sumaTotalGastosMesSeleccionado > 0}" class="d-inline-block p-2">
+                  <span>Total:&nbsp;</span>
+                  <span class="monto" th:text=|${#numbers.formatCurrency(sumaTotalGastosMesSeleccionado)}| id="suma-total"></span>
+                </div>
+                <div th:if="${seSeleccionoFecha != true and sumaTotalGastosMesActual > 0}" class="d-inline-block p-2">
+                  <span>Total:&nbsp;</span>
+                  <span class="monto" th:text=|${#numbers.formatCurrency(sumaTotalGastosMesActual)}| id="suma-total"></span>
+                </div>
+            </div>
+          </div>
+          
+          <div class="align-items-center d-flex justify-content-between pb-4">
+            <h1 class="mt-1 entidad__title">Gastos</h1>
+              <!-- total de gastos del mes -->
+              <div class="d-flex justify-content-between align-items-center">
+
+                <!-- <div class="year-month-selector px-3 py-2 me-3">
+                  <div th:if="${seSeleccionoFecha == true}" class="d-inlinep-2">
+                    <span th:text=|${sumaTotalGastosMesSeleccionado}&nbsp;$| id="suma-total"></span>
+                  </div>
+                  <div th:if="${seSeleccionoFecha != true}" class="d-inline p-2">
+                    <span th:text=|${sumaTotalGastosMesActual}&nbsp;$| id="suma-total"></span>
+                  </div>
+                </div>
+                 -->
+                <button
+                title="Nuevo gasto"
+                class="btn btn-add d-flex"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-añadir-gasto"
+                >
+                  <span class="btn-add__name align-middle mx-1">Añadir gasto</span>
+                  <svg class="svg-icon add" focusable="false"><use xlink:href="#plus-icon"></use></svg>
+                </button>
+            </div>
+          </div>
+
+          <!-- mensaje de busqueda nula -->
+          <div id="searchMsg" class="d-none searchMsg text-center">
+            <img th:src="@{/img/savings.svg}" alt="no-results-image" width="260px">
+            <h3  class="my-4">Sin resultados, intente nuevamente.</h3>
+          </div>
+
+          <!-- Acá comienza el listado de gastos -->
+          <!-- mensaje sin gastos registrados -->
+          <div th:if="${gastosMesSeleccionado != null}">
+            <div th:if="${seSeleccionoFecha == true and gastosMesSeleccionado.isEmpty()}" class="searchMsg text-center">
+              <img th:src="@{/img/savings.svg}" alt="no-results-image" width="220px">
+              <h4 class="my-4">No tienes gastos registrados en esta fecha.</h4>
+            </div>
+          </div> 
+          <!-- Mostrar los gastos del mes Actual-->
+          
+          <!-- <div th:each="gasto : ${gastosMesActual}" th:if="${seSeleccionoFecha != true}">
+            <div class="row">
+              <div class="col-sm-12" th:with="fechaAnterior=${gasto.fecha}">
+                <div th:if="${gasto.fecha == fechaAnterior}" class="card">
+                    <div class="card-body align-middle align-items-center d-flex justify-content-between">
+                      <i class='bx bxs-circle' th:attr="style=|color:hsl(${gasto.categoria.color.h}, ${gasto.categoria.color.s}%, ${gasto.categoria.color.l}%);|"></i>
+
+                      <span th:text="|${gasto.categoria.nombre} (${gasto.comentario})|"></span>
+                      <div class="align-items-center d-flex justify-content-between">
+                        <span  th:text="|${gasto.monto} $|"></span>
+
+                        <div class="dropdown ms-4">
+                          <a class="" id="dropdownActions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <div class="">
+                              <i style="color: #6c757d;" class='bx bx-dots-vertical-rounded' id=""></i>
+                            </div>
+                          </a>
+                  
+                            <div class="dropdown-menu" aria-labelledby="dropdownGastosActions">
+                              <div id="actions">
+                                <a class="dropdown-item" href="#">
+                                  <button
+                                    title="Editar"
+                                    class="btn btn-table"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-editar-gasto"
+                                  >
+                                    <svg class="svg-icon edit"><use xlink:href="#edit-icon"></use></svg>
+                                    <span>Editar</span>
+                                  </button>
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                  <button
+                                  title="Eliminar"
+                                  class="btn btn-table"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#modal-eliminar-gasto"
+                                  th:attr="onclick=|passDataModalEliminarGasto('${gasto.id}')|"
+                                  >
+                                    <svg class="svg-icon remove"><use xlink:href="#delete-icon"></use></svg>
+                                    <span>Eliminar</span>
+                                  </button>
+                                </a>
+                              </div>
+                              <a class="dropdown-item" style="color: #6c757d" href="#">
+                                <i class='bx bxs-check-circle'></i>
+                                <span>pagado?</span>
+                              </a>
+                            </div>
+                        </div>
+                      </div>
+                    </div> 
+                  </div> 
+              </div>
+            </div> 
+          </div> 
+        -->
+
+          <!-- <div th:each="gastoMes : ${gastosMesSeleccionado}" th:if="${seSeleccionoFecha == true}">
+            <div class="row" >
+              <div class="col-sm-12">
+                <div class="card" th:attr="style=|background-color: hsl(${gastoMes.categoria.color.h}, ${gastoMes.categoria.color.s}%, 95%); color:hsl(${gastoMes.categoria.color.h}, ${gastoMes.categoria.color.s}%, ${gastoMes.categoria.color.l}%); border: 1.5px solid hsl(${gastoMes.categoria.color.h}, ${gastoMes.categoria.color.s}%, ${gastoMes.categoria.color.l}%)|">
+                    <div class="card-body align-middle align-items-center d-flex justify-content-between">
+                      <span th:text="|${gastoMes.categoria.nombre} (${gastoMes.comentario})|"></span>
+                      <div class="align-items-center d-flex justify-content-between">
+                        <span  th:text="|${gastoMes.monto} $|"></span>
+
+                        <div class="dropdown dropdown- ms-4">
+                          <a class="" id="dropdownActions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <div class="">
+                              <i style="color: #6c757d;" class='bx bx-dots-vertical-rounded' id=""></i>
+                            </div>
+                          </a>
+                  
+                            <div class="dropdown-menu" aria-labelledby="dropdownUserButton">
+                              <div id="actions">
+                                <a class="dropdown-item" href="#">
+                                  <button
+                                    title="Editar"
+                                    class="btn btn-table"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-editar-gasto"
+                                  >
+                                    <svg class="svg-icon edit"><use xlink:href="#edit-icon"></use></svg>
+                                    <span>Editar</span>
+                                  </button>
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                  <button
+                                  title="Eliminar"
+                                  class="btn btn-table"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#modal-eliminar-gasto"
+                                  th:attr="onclick=|passDataModalEliminarGasto('${gastoMes.id}')|"
+                                  >
+                                    <svg class="svg-icon remove"><use xlink:href="#delete-icon"></use></svg>
+                                    <span>Eliminar</span>
+                                  </button>
+                                </a>
+                              </div>
+                              <a class="dropdown-item" style="color: #6c757d" href="#">
+                                <i class='bx bxs-check-circle'></i>
+                                <span>pagado?</span>
+                              </a>
+                            </div>
+                        </div>
+                      </div>
+                    </div> 
+                  </div>
+              </div>
+            </div> 
+          </div> 
+           -->
+          
+          
+          <!-------------------->
+          <!-- PRUEBA DISPLAY -->
+          <!-------------------->
+
+          <div th:if="${existenGastosMesActual == true and seSeleccionoFecha != true}">
+          <div th:each="grupo : ${grupos}" th:if="${grupo.listaCategorias.size > 0}" class="divGrupo">
+              <p th:if="${grupo.nombre == 'Sin Agrupar'}" class="group__title mt-3 d-none">Categorías varias</p>
+              <p th:if="${grupo.nombre != 'Sin Agrupar'}" class="group__title mt-3 d-none" th:text="${grupo.nombre}"></p>
+              
+              <div th:each="cat : ${grupo.listaCategorias}" class="divGasto">
+                <div class="row" th:each="gasto : ${cat.gastos}" th:if="${gasto.fecha >= primerDiaMesActual and gasto.fecha <= ultimoDiaMesActual}">
+                  <div class="col-sm-12">
+                    <div class="card">
+                      <div class="card-body align-middle align-items-center d-flex justify-content-between">
+                        <div class="align-middle align-items-center d-flex justify-content-start">
+                          <i class='bx bxs-circle' th:attr="style=|color:hsl(${gasto.categoria.color.h}, ${gasto.categoria.color.s}%, ${gasto.categoria.color.l}%);|"></i>
+                          <div class="align-items-baseline descripcion-gasto ps-2">
+                            <span class="d-block" th:text="|${gasto.categoria.nombre}|"></span>
+                            <span class="d-block gasto-comentario" th:text="|'${gasto.comentario}'|"></span>
+                            <span class="d-block gasto-fecha" th:text="|Día:&nbsp;${#dates.day(gasto.fecha)}|"></span>
+                            <!-- <span class="d-block gasto-comentario" th:text="${#dates.format(gasto.fecha, 'dd-MM')}"></span> -->
+                          </div>
+                        </div>
+                                          
+                        <div class="align-items-center d-flex justify-content-between">
+                          <span style="color: rgb(226, 0, 0)" th:text="|${#numbers.formatCurrency(gasto.monto)}|"></span>
+                            
+                          <div class="dropdown ms-lg-4 ms-md-3 ms-sm-1">
+                            <a class="" id="dropdownActions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <div class="">
+                                <i style="color: #6c757d;" class='bx bx-dots-vertical-rounded'></i>
+                              </div>
+                            </a>
+                              
+                            <div class="dropdown-menu" aria-labelledby="dropdownGastosActions">
+                              <div id="actions">
+                                <a class="dropdown-item align-baseline" href="#"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-editar-gasto"
+                                th:attr="onclick=|fillModalEditarGasto('${gasto.id}','${gasto.monto}','${gasto.fecha}','${gasto.categoria.id}','${gasto.comentario}')|"
+                                >
+                                  <button title="Editar" class="btn btn-table">
+                                    <svg class="svg-icon edit"><use xlink:href="#edit-icon"></use></svg>
+                                    <span>Editar</span>
+                                  </button>
+                                </a>
+                                <a class="dropdown-item" href="#"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-eliminar-gasto"
+                                th:attr="onclick=|passDataModalEliminarGasto('${gasto.id}')|"
+                                >
+                                  <button title="Eliminar" class="btn btn-table">
+                                    <svg class="svg-icon remove"><use xlink:href="#delete-icon"></use></svg>
+                                    <span>Eliminar</span>
+                                  </button>
+                                </a>
+                              </div> <!-- end actions -->
+                              <!-- <a class="dropdown-item" style="color: #6c757d" href="#">
+                                <i class='bx bxs-check-circle'></i>
+                                <span>pagado?</span>
+                              </a> -->
+                            </div>
+                          </div> <!-- end dropdown -->
+                        </div>
+                      </div>
+                    </div>
+                  </div> 
+                </div> 
+              </div>
+            </div> 
+          </div> <!-- end container div -->
+              
+          <div th:if="${existenGastosMesSeleccionado == true and seSeleccionoFecha == true}">
+            <div th:each="grupo : ${grupos}" th:if="${grupo.listaCategorias.size > 0}" class="divGrupo">
+              <p th:if="${grupo.nombre == 'Sin Agrupar'}" class="group__title mt-3 d-none">Categorías varias</p>
+              <p th:if="${grupo.nombre != 'Sin Agrupar'}" class="group__title mt-3 d-none" th:text="${grupo.nombre}"></p>
+              
+              <div th:each="cat : ${grupo.listaCategorias}" class="divGasto">
+                <div class="row" th:each="gasto : ${cat.gastos}" th:if="${gasto.fecha >= primerDiaMesSeleccionado and gasto.fecha <= ultimoDiaMesSeleccionado}">
+                  <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body align-middle align-items-center d-flex justify-content-between">
+                          <div class="align-middle align-items-center d-flex justify-content-start">
+                            <i class='bx bxs-circle' th:attr="style=|color:hsl(${gasto.categoria.color.h}, ${gasto.categoria.color.s}%, ${gasto.categoria.color.l}%);|"></i>
+                            <div class="align-items-baseline descripcion-gasto ps-2">
+                              <span class="d-block" th:text="|${gasto.categoria.nombre}|"></span>
+                              <span class="d-block gasto-comentario" th:text="|'${gasto.comentario}'|"></span>
+                              <span class="d-block gasto-fecha" th:text="|Día:&nbsp;${#dates.day(gasto.fecha)}|"></span>
+                            </div>
+                          </div>
+                          <div class="align-items-center d-flex justify-content-between">
+                            <span style="color: rgb(226, 0, 0)" th:text="${#numbers.formatCurrency(gasto.monto)}"></span>
+                              
+                            <div class="dropdown ms-lg-4 ms-md-3 ms-sm-1">
+                              <a id="dropdownActions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div>
+                                  <i style="color: #6c757d;" class='bx bx-dots-vertical-rounded'></i>
+                                </div>
+                              </a>
+                                
+                              <div class="dropdown-menu" aria-labelledby="dropdownGastosActions">
+                                <div id="actions">
+                                  <a class="dropdown-item align-baseline" href="#"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#modal-editar-gasto"
+                                  th:attr="onclick=|fillModalEditarGasto('${gasto.id}','${gasto.monto}','${gasto.fecha}','${gasto.categoria.id}','${gasto.comentario}')|"
+                                  >
+                                    <button title="Editar" class="btn btn-table">
+                                      <svg class="svg-icon edit"><use xlink:href="#edit-icon"></use></svg>
+                                      <span>Editar</span>
+                                    </button>
+                                  </a>
+                                  <a class="dropdown-item" href="#"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#modal-eliminar-gasto"
+                                  th:attr="onclick=|passDataModalEliminarGasto('${gasto.id}')|"
+                                  >
+                                    <button title="Eliminar" class="btn btn-table">
+                                      <svg class="svg-icon remove"><use xlink:href="#delete-icon"></use></svg>
+                                      <span>Eliminar</span>
+                                    </button>
+                                  </a>
+                                </div> <!-- end actions -->
+                                <!-- <a class="dropdown-item" style="color: #6c757d" href="#">
+                                  <i class='bx bxs-check-circle'></i>
+                                  <span>pagado?</span>
+                                </a> -->
+                              </div><!-- end dropdown-menu -->
+                            </div> 
+                          </div>
+
+                          </div> 
+                        </div> <!-- end card -->
+                      </div>
+                  </div> 
+                </div> <!-- end container div -->
+              </div>
+            </div>
+              
+            </div><!-- end gasto container -->
+          </div> <!-- end container-fluid -->
+          
+      </main>
+
+      <!------------------------------------->
+      <!-- MODALES (CREAR/EDITAR/ELIMINAR) -->
+      <!------------------------------------->
+      
+      <!-- Modal Nuevo Gasto -->
+      <div class="modal fade" id="modal-añadir-gasto" role="dialog" tabindex="-1" aria-labelledby="modalNuevoGasto" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalTitle">Crear Gasto</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="createFormGasto" th:action="@{/gastos/crear}" method="POST">
+                <div class="container-fluid px-0 mb-md-2">
+                  <div class="row">
+                    <div class="col-md-6 col-sm-12">
+
+                      <label class="p-0 mb-1" for="nombre">Monto
+                        <button type="button" class="btn-calculator" data-bs-toggle="modal" data-bs-target="#modal-calculator" data-bs-dismiss="modal">
+                          <!-- <i class='bx bxs-calculator'></i> -->
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style="margin-bottom: 3px" viewBox="0 0 16 16">
+                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm2 .5v2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0-.5.5zm0 4v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zM4.5 9a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM4 12.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zM7.5 6a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM7 9.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm.5 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM10 6.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm.5 2.5a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-.5-.5h-1z"/>
+                          </svg>
+                        </button>
+                      </label>
+                      <div class="form-group">
+                        <input
+                        id="montoCreate"
+                        class="form-control"
+                        pattern="^[0-9]*[(,|.)]?[0-9]+$"
+                        title="Ingrese un número"
+                        required
+                        name="monto"
+                        />
+                        <!-- placeholder="Defina el monto del gasto" -->
+                      </div>
+                    </div> <!-- end col-6-->
+
+                    <div class="col-md-6 col-sm-12">
+                    
+                      <label class="p-0 mb-1" for="nombre">Fecha
+                        <button type="button" class="btn-calculator" data-bs-toggle="modal" data-bs-target="#modal-gasto-recurrente" data-bs-dismiss="modal">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" style="margin-bottom: 3px" viewBox="0 0 16 16">
+                            <path stroke-width="6" d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+                            <path stroke-width="6" fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+                          </svg>
+                          <span class="d-none recurrente">(recurrente)</span>
+                        </button>
+                      </label>
+                      <div class="form-group">
+                        <input
+                        id="fechaCreate"
+                        class="form-control"
+                        type="date"
+                        title="Determine la fecha del gasto"
+                        required
+                        name="fecha"
+                        />
+                        <input
+                        id="periodicidad"
+                        class="form-control"
+                        type="hidden"
+                        name="periodicidad"
+                        />
+                        <input
+                        id="vecesARepetir"
+                        class="form-control"
+                        type="hidden"
+                        name="vecesARepetir"
+                        />
+                      </div>
+
+                    </div> <!-- end col-6-->
+
+                  </div>
+                </div>
+
+                <label id="groupListLabel_NuevaCategoria" class="p-0 mb-1" for="nombre">Categoria</label>
+                <div class="form-group">
+                  <select  class="form-control custom-select-modal js-example-basic-single" id="categorias_ModalNuevoGasto" name="categoria_id" required>
+                    <option value="" selected>Seleccione una categoría...</option>
+                     <optgroup th:each="grupo : ${grupos}" th:if="${grupo.listaCategorias.size > 0}" th:attr="label=${grupo.nombre}">
+                       <option
+                        th:each="cat : ${grupo.listaCategorias}"
+                        th:value="${cat.id}"
+                        th:text="${cat.nombre}"
+                      ></option>
+                    </optgroup> 
+                  </select>
+                  <!-- <label id="autoresListEditLabel" class="form-control-placeholder edit-floating-label p-0" for="grupo_id">Grupo al que pertenece</label> -->
+                  <span class="select_crear_entidad">
+                      <a href="" th:href="@{/categorias}"> Nueva categoría.</a>
+                  </span>
+                </div>
+
+                <div class="form-group">
+                  <label class="p-0" for="comentario">Comentario (max. 20 caracteres)</label>
+                  <input
+                    id="comentario"
+                    type="text"
+                    class="form-control"
+                    maxlength="20"
+                    pattern=".*\S.*"
+                    title="Ingrese un comentario."
+                    name="comentario" />
+                  <!-- <label class="form-control-placeholder p-0" for="titulo">Descripción</label> -->
+                </div>          
+
+                <!--Alerta de error-->
+                <div th:if="${errorCrearGasto != null}" th:text="${errorCrearGasto}" role="alert" id="add-gasto-alert"
+                class="alert-error">
+                </div>
+              </form>  
+
+            </div>
+            <div class="modal-footer d-inline-block">
+               <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="createFormGasto" class="btn btn-success">Añadir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Editar Gasto -->
+      <div class="modal fade" id="modal-editar-gasto" role="dialog" tabindex="-1" aria-labelledby="modalEditarGasto" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalTitle">Editar Gasto</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="alert alert-error d-none" role="alert" id="modal-alert">
+                A simple danger alert—check it out!
+              </div>
+              <form id="editFormGasto" method="POST">
+                <div class="container-fluid px-0 mb-md-2">
+                  <div class="row">
+                    <div class="col-md-6 col-sm-12">
+
+                      <label class="p-0 mb-1" for="nombre">Monto
+                        <button type="button" class="btn-calculator" data-bs-toggle="modal" data-bs-target="#modal-calculator" data-bs-dismiss="modal" onclick="switchFlag()">
+                          <!-- <i class='bx bxs-calculator'></i> -->
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style="margin-bottom: 3px" viewBox="0 0 16 16">
+                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm2 .5v2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0-.5.5zm0 4v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zM4.5 9a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM4 12.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zM7.5 6a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM7 9.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm.5 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM10 6.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm.5 2.5a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-.5-.5h-1z"/>
+                          </svg>
+                        </button>
+                      </label>
+                      <div class="form-group">
+                        <input
+                        id="montoEditarGasto"
+                        class="form-control"
+                        pattern="^[0-9]*[(,|.)]?[0-9]+$"
+                        title="Ingrese un número"
+                        required
+                        name="monto"
+                        />
+                      </div>
+                    </div> <!-- end col-6-->
+
+                    <div class="col-md-6 col-sm-12">
+                    
+                      <label class="p-0 mb-1" for="nombre">Fecha
+                        <button type="button" class="btn-calculator">
+                          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" style="margin-bottom: 3px" viewBox="0 0 16 16">
+                            <path stroke-width="6" d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+                            <path stroke-width="6" fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+                          </svg> -->
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17.586346" viewBox="0 0 16 17.586" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 3px">
+                            <rect x=".81" y="2.408" width="14.38" height="14.38" rx="1.598" ry="1.598" stroke="#00e6cf" stroke-width="1.598" stroke-opacity=".784"/><path stroke="#00e6cf" stroke-width="1.598" stroke-opacity=".784" d="M11.195.81v3.196M4.805.81v3.196M.81 7.201h14.38"/>
+                          </svg>
+                          <!-- <span class="d-none recurrente">(recurrente)</span> -->
+                        </button>
+                      </label>
+                      <div class="form-group">
+                        <input
+                        id="fechaEditarGasto"
+                        class="form-control"
+                        type="date"
+                        title="Determine la fecha del gasto"
+                        required
+                        name="fecha"
+                        />
+                        <!-- <input
+                        id="periodicidad"
+                        class="form-control"
+                        type="hidden"
+                        name="periodicidad"
+                        />
+                        <input
+                        id="vecesARepetir"
+                        class="form-control"
+                        type="hidden"
+                        name="vecesARepetir"
+                        /> -->
+                      </div>
+
+                    </div> <!-- end col-6-->
+
+                  </div>
+                </div>
+
+                <label id="groupListLabel_NuevaCategoria" class="p-0 mb-1" for="nombre">Categoria</label>
+                <div class="form-group">
+                  <select  class="form-control custom-select-modal js-example-basic-single" id="categorias_ModalEditarGasto" name="categoria_id" required>
+                    <option value="" selected>Seleccione una categoría...</option>
+                     <optgroup th:each="grupo : ${grupos}" th:attr="label=${grupo.nombre}">
+                       <option
+                        th:each="cat : ${grupo.listaCategorias}"
+                        th:value="${cat.id}"
+                        th:text="${cat.nombre}"
+                      ></option>
+                    </optgroup> 
+                  </select>
+                  <span class="select_crear_entidad">
+                      <a href="" th:href="@{/categorias}"> Nueva categoría.</a>
+                  </span>
+                </div>
+
+                <div class="form-group">
+                  <label class="p-0" for="comentario">Comentario</label>
+                  <input
+                    id="comentarioEditarGasto"
+                    type="text"
+                    class="form-control"
+                    maxlength="150"
+                    pattern=".*\S.*"
+                    title="Ingrese un comentario."
+                    name="comentario" />
+                  <!-- <label class="form-control-placeholder p-0" for="titulo">Descripción</label> -->
+                </div>                
+
+              </form>  
+
+            </div>
+            <div class="modal-footer d-inline-block">
+              <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="editFormGasto" class="btn btn-success">Guardas cambios</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    <!-- Modal (confirmación para eliminar gasto) -->
+      <div class="modal fade" id="modal-eliminar-gasto" tabindex="-1" role="dialog" aria-labelledby="ModalRemoveConfirmation" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                Eliminar Gasto
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <h4 class="mt-1 mb-3">¿Está seguro que desea eliminar este gasto?</h4>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  Cancelar
+              </button>
+              <form id="deleteFormGasto" method="POST">
+                <button type="submit" class="btn btn-danger" id="modal-btn-eliminar">
+                  Eliminar Gasto
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Modal (modificar Usuario) -->
+      <div class="modal fade" id="modal-modificar-usuario" tabindex="-1" role="dialog" aria-labelledby="ModalUpdateUser" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                Información básica de mi cuenta
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <form id="updateUser" th:action="@{cuentaUsuario/modificarFoto}" method="POST" enctype="multipart/form-data">
+                <h4 class="mt-1 mb-3">¿Está seguro que desea eliminar este gasto?</h4>
+                <h4 th:text="${usuarioId}"></h4>
+                <div class="form-group">
+                  <input
+                  type="hidden"
+                  class="form-control"
+                  name="usuario_id" 
+                  th:value="${usuarioId}"/>
+
+                  <label class="p-0" for="comentario">Foto</label>
+                  <input
+                    id="fotoUsuario"
+                    type="file"
+                    class="form-control"
+                    name="foto" />
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  Cancelar
+              </button>
+                <button type="submit" form="updateUser" class="btn btn-success" id="update-user-btn">
+                  Guardar
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+   
+      <!-- Modal (calculator!) -->
+      <div class="modal fade" id="modal-calculator" tabindex="-1" role="dialog" aria-labelledby="ModalCalculator" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                Calculadora
+              </h5>
+              <button id="close-calculator-btn" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <div id="calculator" class="calculator pb-2">
+                
+                <button id="clear" class="clear"><span class="shrink">Reiniciar</span></button>
+                <button id="backspace"><svg class="svg-icon"><use xlink:href="#backspace-icon"></use></svg></button>
+                <!-- DISPLAY  -->
+                <div class="viewer__container">
+                  <div id="viewer" class="viewer">0</div>
+                </div>
+                <!-- BOTONES -->
+                <button class="num" data-num="7">7</button>
+                <button class="num" data-num="8">8</button>
+                <button class="num" data-num="9">9</button>
+                <button data-ops="+" class="ops">+</button>
+                
+                <button class="num" data-num="4">4</button>
+                <button class="num" data-num="5">5</button>
+                <button class="num" data-num="6">6</button>
+                <button data-ops="-" class="ops">-</button>
+                
+                <button class="num" data-num="1">1</button>
+                <button class="num" data-num="2">2</button>
+                <button class="num" data-num="3">3</button>
+                <button data-ops="x" class="ops">x</button>
+                
+                <button class="num" data-num="0">0</button>
+                <button class="num" data-num=".">.</button>
+                <button id="Ans"><span class="shrink">Ans</span></button>
+                <button data-ops="/" class="ops">/</button>
+                
+                <button id="equals" class="equals" data-result="">
+                  <span class="stretch">=</span>
+                </button>
+                
+                <form id="formMonto" action="" method="post">
+                    <input type="text" id="inputMonto" hidden></input>
+                    <button type="button" id="submitMonto__btn" data-bs-dismiss="modal">
+                      <span class=""><i class='bx bx-check fw-bolder'></i></span>
+                    </button>
+                  </form>
+                  
+                </div>
+                <span id="reset-msg" class="d-inline-block">Un gasto infinito puede ser un gran problema...</span>
+                <button id="reset" class="btn reset">¿Reiniciamos todo mejor?</button>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <!-- Modal (gasto recurrente!) -->
+      <div class="modal fade" id="modal-gasto-recurrente" tabindex="-1" role="dialog" aria-labelledby="ModalGastoRecurrente" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                Programar Recurrencia
+              </h5>
+              <button id="close-recurrencia-btn" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <p>Veces que se repetirá</p>
+              <div class="text-center">
+                <button type="button" class="number-decrement" data-disminuir-veces>
+                  <i class='bx bxs-chevron-down'></i>
+                </button>
+
+                <input class="year m-auto" type="number" readonly min="0" max="48" data-repeticion-gasto>
+               
+                <button type="button" class="number-increment" data-aumentar-veces>
+                  <i class='bx bxs-chevron-up'></i>
+                </button>
+              </div>
+
+              <p class="mt-4">Definir periodicidad</p>
+              <div class="form-group">
+                <button id="periodo-7dias" class="btn btn-success">1 semana</button>
+                <button id="periodo-15dias" class="btn btn-success">15 días</button>
+                <button id="periodo-mensual" class="btn btn-success">Mensual</button>
+                <button id="periodo-personalizado" class="btn btn-success">Personalizada</button>
+              </div>
+
+              <div id="selector-periodo-personalizado" class="hidden text-center">
+                <p>Repetir cada (días)</p>
+                <button type="button" class="number-decrement" data-disminuir-dias>
+                  <i class='bx bxs-chevron-down'></i>
+                </button>
+
+                <input class="year m-auto" type="number" readonly min="0" max="48" data-periodo-personalizado>
+               
+                <button type="button" class="number-increment" data-aumentar-dias>
+                  <i class='bx bxs-chevron-up'></i>
+                </button>
+              </div>
+
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+              <button id="guardad-recurrencia-btn" type="button" class="btn btn-success" data-bs-dismiss="modal">
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    <!-- Modal (year-month selector) -->
+      <div class="modal fade" id="year-month-modal" tabindex="-1" role="dialog" aria-labelledby="ModalMonthCalendar" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content calendar">
+                      
+            <!-- Selector año-mes formato calendario -->
+            <div id="dateSelector" class="card m-auto">
+              <form id="year-month-Form" method="POST" th:action="@{/gastos/filtrarPorFecha}">
+                <div class="card-header text-center">
+                  <button type="button" class="number-decrement" data-prev-year>
+                    <i class='bx bxs-chevron-left'></i>
+                  </button>
+
+                  <input class="year m-auto" type="number" readonly min="1980" max="2100" data-year name="anioSeleccionado">
+                 
+                  <button type="button" class="number-increment" data-next-year>
+                    <i class='bx bxs-chevron-right'></i>
+                  </button>
+                </div>
+
+                <div id="months-grid" class="card-body grid-container m-2">
+                  <a href="#" onclick=passMonth(1) class="btn btn-sm btn-primary">ENE.</a>
+                  <a href="#" onclick=passMonth(2) class="btn btn-sm btn-primary">FEB.</a>
+                  <a href="#" onclick=passMonth(3) class="btn btn-sm btn-primary">MAR.</a>
+                  <a href="#" onclick=passMonth(4) class="btn btn-sm btn-primary">ABR.</a>
+                  <a href="#" onclick=passMonth(5) class="btn btn-sm btn-primary">MAY.</a>
+                  <a href="#" onclick=passMonth(6) class="btn btn-sm btn-primary">JUN.</a>
+                  <a href="#" onclick=passMonth(7) class="btn btn-sm btn-primary">JUL.</a>
+                  <a href="#" onclick=passMonth(8) class="btn btn-sm btn-primary">AGO.</a>
+                  <a href="#" onclick=passMonth(9) class="btn btn-sm btn-primary">SET.</a>
+                  <a href="#" onclick=passMonth(10) class="btn btn-sm btn-primary">OCT.</a>
+                  <a href="#" onclick=passMonth(11) class="btn btn-sm btn-primary">NOV.</a>
+                  <a href="#" onclick=passMonth(12) class="btn btn-sm btn-primary">DIC.</a>
+                </div>
+                
+                <input type="hidden" data-month name="mesSeleccionado">
+                
+                <div class="modal-footer d-flex justify-content-around">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">
+                    <span class="small px-1">Cancelar</span>
+                  </button>
+                  <button type="submit" class="btn btn-sm btn-primary" id="date-submit-btn">
+                    <i class='bx bx-check'></i>
+                  </button>
+                </div>
+              </form>
+            </div> 
+  
+          </div>
+        </div>
+      </div>
+      
+      
+    <!--===== BOOTSTRAP JS =====-->
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>  -->
+    
+    <script src="../static/js/jquery-3.5.1.min.js" th:src="@{/lib/jquery-3.5.1.min.js}"></script>
+    <script src="../static/lib/bootstrap.bundle.min.js" th:src="@{/lib/bootstrap.bundle.min.js}"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/lib/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>  -->
+    
+   
+    <!--===== CUSTOM js SCRIPTS =====-->
+
+    <script src="../static/js/sidebar.js" th:src="@{/js/sidebar.js}"></script>
+    <script src="../static/js/searchBoxBasics.js" th:src="@{/js/searchBoxBasics.js}"></script>
+    <script src="../static/js/searchBoxGastos.js" th:src="@{/js/searchBoxGastos.js}"></script>
+    <script src="../static/js/dates.js" th:src="@{/js/dates.js}"></script>
+    <script src="../static/js/gastoRecurrente.js" th:src="@{/js/gastoRecurrente.js}"></script>
+    <script src="../static/js/calculator.js" th:src="@{/js/calculator.js}"></script>
+
+    <script>
+      // setear la fecha actual como fecha por defecto en el formulario
+      document.getElementById('fechaCreate').value = new Date().toISOString().slice(0, 10);
+
+      $("#btn-collapse-categorias").on('click', function(){
+        $(".divider").toggleClass('d-none');
+       ($(this).prop('title') == 'Ocultar gastos') ? $(this).prop('title','Mostrar gastos') : $(this).prop('title','Ocultar gastos')
+      });
+      
+      // back to top button
+      $('#toTopBtn').fadeOut();
+      $(window).scroll(function() {
+          ($(this).scrollTop() > 150) ? $('#toTopBtn').fadeIn() : $('#toTopBtn').fadeOut();
+      });
+
+      // * Need to pass the data needed to modals & define the specific form actions
+     
+      function fillModalEditarGasto(gastoId, monto, fecha, categoria_Id, comentario){
+        $('#editFormGasto').attr('action','/gastos/modificar/' + gastoId );
+
+        $('#montoEditarGasto').val(monto);
+        $('#fechaEditarGasto').val(fecha);
+        $('#comentarioEditarGasto').val(comentario);
+
+        // selecciono categoria del select
+        let formSelectCategorias = $('#categorias_ModalEditarGasto');
+        let options = formSelectCategorias.find('option');
+
+        options.each(function(){
+          if ($(this).prop('value') == categoria_Id) {
+            $(this).prop('selected', 'true');
+          }
+        });
+      }
+
+      function passDataModalEliminarGasto(gastoId){
+        $('#deleteFormGasto').attr('action','/gastos/eliminar/' + gastoId); 
+      }
+
+    </script>
+	
+  <script>
+    $(document).ready(function() {
+
+      // Mostrar mensaje error: (sin acceso a la variable de error):
+      // Si hay error, el contralador redirige a nueva url con una etiqueta;
+      // si la etiqueta de error no existe, el indexOf retorna -1
+      let url = window.location.href;
+      if (url.indexOf('/#error-al-crear-gasto') != -1)  {
+          $('#modal-añadir-gasto').modal('show');
+      }
+
+      // error msg
+      let errMsg = $('#add-gasto-alert');
+      if (errMsg.length > 0) {
+          let text = errMsg.text();
+          errMsg.html("<svg class='svg-icon error-icon me-2 mb-1'><use xlink:href='#error-icon'></use></svg>" + text)
+      }
+
+      ////
+      
+      function isEmpty( element ){
+        return !$.trim(element.html());
+        //return element.children().length == 0
+      }
+      let divsGrupo = $('.divGrupo');
+      //let titulos = divsGrupo.find('.group__title');
+      //let divsGasto = divsGrupo.find('.divGasto');
+      
+      divsGrupo.each(function(){
+        let grupo = $(this);
+        let divsGasto = grupo.find('.divGasto');
+        let counter = 0;
+        divsGasto.each(function(){
+          if (!isEmpty($(this))) {
+            counter++;
+          }
+        });
+
+        let tituloGrupo = grupo.find('.group__title');
+        if (counter > 0) {
+          tituloGrupo.removeClass('d-none')
+        }
+
+      });
+
+      ///
+                
+      let formInputContainers = $('.form-group');
+                
+      formInputContainers.each(function() {
+        let inputContainer = $(this);
+        let input = inputContainer.find('input');
+        let label = inputContainer.find('label');
+                  
+        function checkInput() {
+                
+          let valueLength = input.val().length;
+                
+          if (valueLength > 0 ) { label.addClass('floating-label'); } 
+          else                  { label.removeClass('floating-label'); }
+          
+          if ( input.is(":valid")){
+            input.removeClass("invalid");
+              input.addClass("valid");
+          }else{
+            input.removeClass("valid");
+            input.addClass("invalid");
+          }
+        }
+        
+        input.change(() => checkInput());
+      });
+
+    });
+    
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+  .drag-area{
+    border: 2px dashed aliceblue;
+    height: 100%;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 1rem!important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .drag-area.dropped{
+    border: 3px solid var(--green-color);
+  }
+  .drag-area .icon{
+    font-size: 6rem;
+    color: aliceblue;
+  }
+  .drag-area header{
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--active-color);
+    /* color: #fff; */
+  }
+  .drag-area span{
+    font-size: .9rem;
+    color: aliceblue;
+    margin: .625rem 0 1rem 0;
+  }
+  .drag-area input{
+    padding: .7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    background: aliceblue;
+    color: var(--blue-color);
+    border-radius: .3rem!important;
+    cursor: pointer;
+  }
+  .drag-area img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 1rem!important;
+  }

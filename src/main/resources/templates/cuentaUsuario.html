@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+      <!-- ===== BOX ICONS ===== -->
+      <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet' />
+
+      <!-- ===== CSS ===== -->
+       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" /> 
+      <!--<link href="../static/lib/bootstrap.min.css" rel="stylesheet" />-->
+      <link rel="stylesheet" th:href="@{/css/styles.css}" />
+      <link rel="stylesheet" th:href="@{/css/drag&dropImg.css}" />
+
+      <!--- Favicon --->
+      <link rel="icon" type="image/svg" sizes="32x32" th:href="@{/img/favicon.svg}">
+
+      <title>Gestor Gastos | Cuenta</title>
+  </head>
+
+  <body id="body">
+  <!---------------- SVG ICONS -------------------> 
+    <svg style="display: none;">
+      <defs>
+        <!-- error icon -->
+        <symbol id="error-icon" viewBox="0 0 24 24" fill="red">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
+        </symbol>
+        <!-- password eye icon -->
+        <symbol id="password-eye" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+          <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+        </symbol>
+      </defs>
+    </svg>
+    
+
+    <!-- horizontal navbar (contains menu toggle icon, and profile account) -->
+    <header class="header" id="header">
+        <div class="header__toggle me-1">
+          <i class='bx bx-menu' id="header-toggle"></i>
+        </div>
+        <!-- <div class="input-group input-group-sm">
+          <span id="searchIcon" type="button" class="input-group-text">
+            <i id="searchSVG" class='bx bx-search nav__icon currentColor'></i>
+          </span>
+          <input
+            id="searchBox"
+            type="search"
+            class="form-control"
+            placeholder="Filtrar gastos..."
+            aria-label="Buscar Gastos"
+            onfocusout="hideSearchBox()"
+          >
+        </div> -->
+
+      <div class="dropdown ms-4">
+        <a class="" id="dropdownUserButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <div class="header__img">
+            <img th:if="${usuarioFoto != null}" class="fotoPerfil" th:src="${'/foto/usuario/' + __${usuarioId}__}" alt="foto-perfil">
+            <img th:if="${usuarioFoto == null}" th:src="@{/img/user.svg}" alt="foto-perfil">
+          </div>
+        </a>
+
+          <div class="dropdown-menu" aria-labelledby="dropdownUserButton">
+            <p class="dropdown-item dropdown-title fw-bold" style="color: var(--green-color)">¡Bienvenido,&nbsp;
+              <span class="d-block fw-normal" th:text="|${usuarioNombre}!|"></span>
+              <!-- <span class="d-block fw-normal" th:text="|${#authentication.principal.username}!|"></span> -->
+            </p>
+            <a class="dropdown-item" style="color: #6c757d" href="#"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-modificar-usuario">
+              <i class='bx bxs-user-circle'></i>
+              <span>Mi cuenta</span>
+            </a>
+            <!-- <a class="dropdown-item" href="#" style="color: #6c757d"> -->
+              <form th:action="@{/logout}" method="POST" class="dropdown-item d-flex align-items-center">
+                <i class='bx bx-log-out' style="color: #6c757d"></i>
+                <button class="dropdown-item" type="submit" id="logout">Cerrar Sesión</button>
+              </form>
+              <!-- <span>Cerrar Sesión</span> -->
+            <!-- </a> -->
+          </div>
+      </div>
+    </header>
+          
+    <div id="backdropId" class="backdrop"></div>
+        
+    <!-- sidebar menu -->
+    <div class="sidebar overflow-y-auto" id="sidebar">
+      <nav id="nav-tag" class="nav">
+        <div> 
+          <!--  app name + logo-->
+          <a id="brand" th:href="@{/}" class="nav__logo">
+            <img th:src="@{/img/logo_gastegg_blanco_sidebar.svg}" height="30"  alt="App LOGO" class="logo">
+            <span id="app__name" class="ms-2 nav__logo-name">
+              <img th:src="@{/img/gastegg_nombre_blanco.svg}" width="60" alt="App name" class="logo">
+            </span>
+            <!-- <i class='bx bx-layer nav__logo-icon'></i> -->
+            <!-- <span id="app__name" class="nav__logo-name" >Gestor de Gastos</span> -->
+          </a>
+         
+          <!-- nav list container-->
+          <div class="nav__list">
+            
+            <a href="#" class="nav__link">
+              <i class='ocre-text bx bx-crown nav__icon'></i>
+              <span class="link__name">Versión Premium</span>
+            </a>
+
+            <a href="#" th:href="@{/gastos}" class="nav__link">
+              <i class='bx bx-dollar-circle nav__icon'></i>
+              <span class="link__name">Gastos</span>
+            </a>
+            
+            <a href="#" th:href="@{/categorias}" class="nav__link">
+              <i class='bx bx-folder nav__icon'></i>
+              <span class="link__name">Categorías</span>
+            </a>
+            
+            <a href="#" th:href="@{/estadisticas}" class="nav__link">
+              <i class='bx bx-bar-chart-alt-2 nav__icon'></i>
+              <span class="link__name">Estadísticas</span>
+            </a>
+            
+            <a href="#" class="nav__link">
+              <i class='bx bx-message-square-detail nav__icon'></i>
+              <span class="link__name">Recordatorios</span>
+            </a>
+            
+            <!-- #logout? -->  
+            <a id="logout-sidebar" href="#" class="nav__link mt-2">
+              <i class='bx bx-log-out nav__icon'></i>
+              <span class="link__name">Log Out</span>
+            </a>
+
+          </div> <!-- end of nav__list container--> 
+        </div> 
+      </nav>
+    </div> <!-- sidebar end-->
+    
+    <!-- content -->
+    <main>
+      <div class="container-fluid">
+        <br>
+        <!-- contenedor entidad -->
+        <div class="card entidad__container pb-5">
+          <div class="align-items-center pb-4">
+            <h1 class="mt-1 entidad__title">Mi Cuenta</h1>
+          </div>
+
+          <div class="card-body text-center">
+            <div th:if="${usuarioFoto != null}">
+              <img class="fotoPerfil" th:src="${'/foto/usuario/' + __${usuarioId}__}" alt="foto-usuario">
+              <h5 class="blue-text my-3" th:text="|Bienvenido, ${usuarioNombre}|"></h5>
+              <p class="gray-text small fw-lighter">Aquí puedes personalizar tu cuenta</p>
+            </div>
+            <div th:if="${usuarioFoto == null}">
+              <img class="fotoPerfil" th:src="@{/img/user.svg}" alt="foto-perfil">
+              <h5 class="blue-text my-3" th:text="|Bienvenido, ${usuarioNombre}|"></h5>
+              <p class="gray-text small fw-lighter">Aquí puedes personalizar tu cuenta</p>
+            </div>
+          </div>
+
+          <div class="my-auto mt-5 text-center">
+            <!-- modificar Foto perfil -->
+            <div class="py-1 align-middle align-items-center">
+              <button class="btn btn-success px-4" th:if="${usuarioFoto != null}" data-bs-toggle="modal" data-bs-target="#modal-modificar-foto">
+                Cambiar foto de perfil
+              </button>
+              <button class="btn btn-success px-4" th:if="${usuarioFoto == null}" data-bs-toggle="modal" data-bs-target="#modal-modificar-foto">
+                Cargar foto de perfil
+              </button>
+            </div>  
+            
+            <!-- modificar Nombre de usuario -->
+            <div class="py-1 align-middle align-items-center">
+              <button class="btn btn-success px-4" data-bs-toggle="modal" data-bs-target="#modal-modificar-nombre">
+                Cambiar nombre de usuario
+              </button>
+            </div>  
+
+            <!-- modificar Contraseña -->
+            <div class="py-1 align-middle align-items-center">
+              <button class="btn btn-success px-4" data-bs-toggle="modal" data-bs-target="#modal-modificar-clave">
+                Cambiar contraseña
+              </button>
+            </div>  
+            <!-- mensaje clave odificada exitosamente -->
+            <div id="mensajeClaveModificada">
+              <p class="card d-inline-block px-4 py-3 blue-text small mt-3">¡Contraseña modificada exitosamente!</p>
+            </div>
+
+          </div>
+            
+        </div> <!-- end card -->
+      </div><!-- end container -->
+
+    </main> 
+    
+    <!--------------->
+    <!--- MODALS --->
+    <!--------------->
+
+    <div class="modal fade" id="modal-modificar-foto" data-bs-backdrop="static" role="dialog" tabindex="-1" aria-labelledby="modalFotoPerfil" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Cambiar foto de perfil</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="updateUserPhoto" th:action="@{cuentaUsuario/modificarFoto}" method="POST" enctype="multipart/form-data">
+              <div class="input-group form-group">
+                <input type="hidden" name="usuario_id" th:value="${usuarioId}"/>
+                <!-- <label class="p-0" for="comentario">Foto de Perfil</label> -->
+                <div class="drag-area">
+                  <div class="icon"><i class="bx bx-upload"></i></div>
+                  <header class="green-text">Arrastra una foto aquí</header>
+                  <span>— O —</span>
+                  <!-- button to pick a file -->
+                  <input id="pickPhotoBtn" type="button" class="btn-success" value="Selecciona una foto para subirla"/>
+                </div>
+                <input id="fotoUsuario" type="file" name="foto" hidden/>
+              </div>
+            </form>
+            <!--Alerta de error-->
+            <div th:if="${errorAlModificarFoto != null}" th:text="${errorAlModificarFoto}" role="alert" id="modificar-foto-alert"
+            class="alert-error">
+            </div>
+            <!-- modal footer -->
+            <div class="modal-footer d-flex justify-content-between">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  Cancelar
+                </button>
+              <button type="submit" form="updateUserPhoto" class="btn btn-success" id="update-user-btn">
+                Guardar foto
+              </button>
+            </div>
+          </div>
+        </div>    
+      </div>
+    </div>
+
+    <!-- modal cambiar nombre usuario -->
+    <div class="modal fade" id="modal-modificar-nombre" role="dialog" tabindex="-1" aria-labelledby="modalNombreUsuario" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Cambiar nombre de usuario</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body mt-2">
+            <form id="updateUsername" th:action="@{/cuentaUsuario/modificarNombre}" method="POST">
+              <input type="hidden" name="usuario_id" th:value="${usuarioId}"/>
+              <div class="input-group form-group">
+                <input id="nombreUsuario" class="form-control mt-1" type="text" name="nombre" pattern=".*\S.*" required/>
+                <label for="nombreUsuario" class="p-0 form-control-placeholder">Nuevo Nombre</label>
+              </div>
+            </form>
+            <!--Alerta de error-->
+            <div th:if="${errorAlModificarNombre != null}" th:text="${errorAlModificarNombre}" role="alert" id="modificar-nombre-alert"
+            class="alert-error">
+            </div>
+          </div>
+          <div class="modal-footer d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancelar
+            </button>
+            <button type="submit" form="updateUsername" class="btn btn-success" id="update-user-btn">
+              Guardar cambios
+            </button>
+          </div>
+        </div>    
+      </div>
+    </div>
+
+    <!-- modal cambiar contraseña -->
+    <div class="modal fade" id="modal-modificar-clave" role="dialog" index="-1" aria-labelledby="modalContraseña" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Cambiar contraseña</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="changePassword" th:action="@{/cuentaUsuario/modificarContraseña}" method="POST">
+              <input type="hidden" name="username" th:value="${usuarioNombre}"/>
+              <input type="hidden" name="email" th:value="${#authentication.principal.username}"/>
+  
+              <div class="input-group form-group" style="margin-top: 20px;">
+                <input
+                id="claveActual"
+                type="password"
+                class="form-control mt-1"
+                name="claveActual"
+                required
+                />
+                <label class="p-0 form-control-placeholder" for="claveActual">Ingresa tu clave actual
+                  <a href="#" class="passwordEye ms-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 18">
+                      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                      <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                    </svg>
+                  </a>
+                </label>
+              </div>
+              <div class="input-group form-group" style="margin-top: 35px;">
+                <input
+                id="claveNueva"
+                type="password"
+                class="form-control mt-1"
+                name="claveNueva"
+                required
+                />
+                <label class="p-0 form-control-placeholder" for="claveNueva">Clave nueva
+                  <a href="#" class="passwordEye ms-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 18">
+                      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                      <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                    </svg>
+                  </a>
+                </label>
+              </div>
+              <div class="input-group form-group" style="margin-top: 35px;">
+                <input
+                  id="claveNuevaConfirmacion"
+                  type="password"
+                  class="form-control mt-1"
+                  name="claveNuevaConfirmacion"
+                  required
+                />
+                <label class="p-0 form-control-placeholder" for="claveNuevaConfirmacion">Confirma la nueva clave
+                  <a href="#" class="passwordEye ms-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 18">
+                      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                      <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                    </svg>
+                  </a>
+                </label>
+              </div>
+              <!--Alerta de error-->
+              <div th:if="${errorAlModificarClave != null}" th:text="${errorAlModificarClave}" role="alert" id="modificar-clave-alert"
+              class="alert-error">
+              </div>
+            </form>
+
+            <div id="passwordRequirements" class="pass-error py-0 invisible"> 
+              <svg class='svg-icon error-icon me-2 mb-1'><use xlink:href='#error-icon'></use></svg>
+              <b>La clave debe tener:</b>&nbsp; al menos 8 caracteres, 1 letra mayúscula, 1 número y 1 símbolo.
+            </div>
+
+          </div>
+          <div class="modal-footer d-flex justify-content-between mt-3">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancelar
+            </button>
+            <button type="submit" form="changePassword" class="btn btn-success" id="change-password-btn">
+              Guardar
+            </button>
+          </div>
+        </div>    
+      </div>
+    </div>
+
+    <!--===== Jquery =====-->
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>  -->
+    <script src="../static/js/jquery-3.5.1.min.js" th:src="@{/lib/jquery-3.5.1.min.js}"></script>
+    
+    <!--===== BOOTSTRAP JS =====-->
+    <script th:src="@{/lib/bootstrap.bundle.min.js}"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>  -->
+    
+    <!--===== CUSTOM js SCRIPTS =====-->
+    <script src="../static/js/sidebar.js" th:src="@{/js/sidebar.js}"></script>
+    <script src="../static/js/forms.js" th:src="@{/js/forms.js}"></script>
+    <script src="../static/js/drag&dropImg.js" th:src="@{/js/drag&dropImg.js}"></script>
+
+    <script>
+      $(document).ready(function() {
+        let url = window.location.href;
+
+        if (url.indexOf('/#error-al-modificar-nombre') != -1)  {
+            $('#modal-modificar-nombre').modal('show');
+        }
+
+        if (url.indexOf('/#error-al-modificar-clave') != -1)  {
+            $('#modal-modificar-clave').modal('show');
+        }
+
+        if (url.indexOf('/#error-al-modificar-foto') != -1)  {
+            $('#modal-modificar-foto').modal('show');
+        }
+
+        // add icon to error messages
+        let errorMessages = $('.alert-error');
+        errorMessages.each(function(){
+          let errMsg = $(this);
+          let text = errMsg.text();
+          if (errMsg.length > 0) {
+              errMsg.html("<svg class='svg-icon error-icon me-2 mb-1'><use xlink:href='#error-icon'></use></svg>" + text)
+          }
+        });
+
+      });
+  </script>
+
+  <script th:inline="javascript">
+    let msg = [[${claveModificadaExitosamente}]];
+    if (msg != null) {
+      $('#mensajeClaveModificada').addClass('show')
+    }
+    setTimeout(function() { 
+      $('#mensajeClaveModificada').removeClass('show');
+    }, 4500);
+  </script>
+
+</body>
+</html>
